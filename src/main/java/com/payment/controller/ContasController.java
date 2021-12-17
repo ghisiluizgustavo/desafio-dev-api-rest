@@ -1,5 +1,6 @@
 package com.payment.controller;
 
+import com.payment.controller.swagger.ContasInterface;
 import com.payment.model.Transacoes;
 import com.payment.model.dto.ContasDTO;
 import com.payment.model.dto.TransacoesDTO;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contas")
-public class ContasController {
+public class ContasController implements ContasInterface {
 
     @Autowired
     private ContasService contasService;
