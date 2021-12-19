@@ -34,7 +34,7 @@ public class TransacoesService {
         if (transacaoEnum.equals(TransacaoEnum.SAQUE)) {
             transacao.setValor(transacao.getValor().negate());
 
-            if(!verificarSaldo(transacao))
+            if(verificarSaldo(transacao))
                 return ResponseEntity.badRequest().build();
         }
 
