@@ -4,7 +4,7 @@
 
 **1. Clone o repositório**
    ```
-   git clone https://github.com/ghisiluizgustavo/market-control.git
+   git clone https://github.com/ghisiluizgustavo/desafio-dev-api-rest.git
    ```
 **2. Abra o projeto no IntelliJ e vá em *Edit Configurations***
 
