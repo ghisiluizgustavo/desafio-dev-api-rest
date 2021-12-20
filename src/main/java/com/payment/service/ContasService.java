@@ -56,6 +56,7 @@ public class ContasService {
         }
         Contas conta = contasOptional.get();
         conta.setFlagAtivo(false);
+        contasRepository.save(conta);
         ContasDTO contaDTO = modelMapper.map(conta, ContasDTO.class);
         return ResponseEntity.ok(contaDTO);
     }

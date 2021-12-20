@@ -9,11 +9,15 @@ import com.payment.repository.TransacoesRepository;
 import com.payment.util.TransacaoEnum;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +32,14 @@ public class TransacoesService {
     private ContasService contasService;
     private ModelMapper modelMapper = new ModelMapper();
 
+    private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
     public ResponseEntity<TransacoesDTO> realizarTransacao(TransacoesDTO transacaoDTO, TransacaoEnum transacaoEnum){
         Transacoes transacao = modelMapper.map(transacaoDTO, Transacoes.class);
+
+        if (!verificarFlagAtiva(transacao.getConta().getIdConta())){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         if (transacaoEnum.equals(TransacaoEnum.SAQUE)) {
             transacao.setValor(transacao.getValor().negate());
@@ -50,13 +60,36 @@ public class TransacoesService {
         return transacao.getValor().compareTo(saldo) > 0;
     }
 
-    public ResponseEntity<List<TransacoesDTO>> extratoConta(Integer idConta) {
+    private boolean verificarFlagAtiva(Integer idConta){
+        Optional<Contas> contasOptional = contasRepository.findById(idConta);
+        if(contasOptional.isEmpty()){
+            return false;
+        }
+        if(!contasOptional.get().getFlagAtivo()){
+            return false;
+        }
+        return true;
+    }
+
+    public ResponseEntity<List<TransacoesDTO>> extratoContaPorPeriodo(Integer idConta, String dataInicio, String dataFim) throws ParseException {
         Optional<Contas> contaOpt = contasRepository.findById(idConta);
         if(contaOpt.isEmpty()){
             return ResponseEntity.notFound().build();
         }
+
         Contas conta = contaOpt.get();
-        Optional<List<Transacoes>> transacoes = transacoesRepository.findAllTransacoesByContaId(conta);
+
+        Date dataInicioDateFormat, dataFimDateFormat;
+
+        if(dataInicio != null && dataFim != null){
+            dataInicioDateFormat = format.parse(dataInicio);
+            dataFimDateFormat = format.parse(dataFim);
+        } else {
+            dataInicioDateFormat = conta.getDataCriacao();
+            dataFimDateFormat = new Date();
+        }
+
+        Optional<List<Transacoes>> transacoes = transacoesRepository.findAllTransacoesByContaIdAndIntervalDate(conta, dataInicioDateFormat, dataFimDateFormat);
         if (transacoes.isEmpty()){
             return ResponseEntity.notFound().build();
         }

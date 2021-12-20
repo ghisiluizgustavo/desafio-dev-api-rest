@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 public interface ContasInterface {
@@ -25,5 +27,7 @@ public interface ContasInterface {
     ResponseEntity<ContasDTO> bloquearConta(@PathVariable Integer idConta);
 
     @ApiOperation("Path que consulta extrato de transações de uma conta baseado no id passado na URL")
-    ResponseEntity<List<TransacoesDTO>> extrato(@PathVariable Integer idConta);
+    ResponseEntity<List<TransacoesDTO>> extratoPorPeriodo(@PathVariable Integer idConta,
+                                                          @RequestParam(required = false) String dataInicio,
+                                                          @RequestParam(required = false) String dataFim) throws ParseException;
 }

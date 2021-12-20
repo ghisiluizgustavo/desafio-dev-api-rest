@@ -1,7 +1,6 @@
 package com.payment.controller;
 
 import com.payment.controller.swagger.ContasInterface;
-import com.payment.model.Transacoes;
 import com.payment.model.dto.ContasDTO;
 import com.payment.model.dto.TransacoesDTO;
 import com.payment.service.ContasService;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -40,7 +40,9 @@ public class ContasController implements ContasInterface {
     }
 
     @GetMapping("/extrato/{idConta}")
-    public ResponseEntity<List<TransacoesDTO>> extrato(@PathVariable Integer idConta){
-        return transacoesService.extratoConta(idConta);
+    public ResponseEntity<List<TransacoesDTO>> extratoPorPeriodo(@PathVariable Integer idConta,
+                                                                 @RequestParam(required = false) String dataInicio,
+                                                                 @RequestParam(required = false) String dataFim) throws ParseException {
+        return transacoesService.extratoContaPorPeriodo(idConta, dataInicio, dataFim);
     }
 }
